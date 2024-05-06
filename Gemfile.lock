@@ -3,6 +3,8 @@ GEM
   specs:
     base64 (0.2.0)
     bigdecimal (3.1.7)
+    jwt (2.8.1)
+      base64
     mini_portile2 (2.8.6)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
@@ -31,6 +33,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  jwt
   sequel
   sinatra
   sqlite3
