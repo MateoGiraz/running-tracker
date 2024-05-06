@@ -1,17 +1,28 @@
+require_relative '../services/jwt'
+require_relative '../serializers/race_serializer'
+
 class RacesController < Sinatra::Base
   races = DB.from(:races)
 
   get '/races/:id' do
-    races.where(id: params[:id]).first.to_json
+    raw_race = races.where(id: params[:id]).first
+    RaceSerializer.serialize(raw_race)
   end
 
   get '/runners/:id/races' do
-    races.where(runner_id: params[:id]).all.to_json
+    raw_races = races.where(runner_id: params[:id])
+    RaceSerializer.serialize_each(raw_races)
   end
 
   post '/runners/:id/races' do
-    runner_id = params[:id]
+    authorization_header = request.env['HTTP_AUTHORIZATION']
+    current_user = Jwt.decode(authorization_header)[0]
+
+    if current_user['id'].to_s != params[:id]
+      halt 401
+    end
+
     race = JSON.parse request.body.read
-    races.insert(time: race['time'], distance: race['distance'], runner_id: runner_id)
+    races.insert(time: race['time'], distance: race['distance'], runner_id: params[:id])
   end
 end
